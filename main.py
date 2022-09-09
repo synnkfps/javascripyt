@@ -1,15 +1,39 @@
 import replacer 
 
 javascript = '''
-// input from the user
-const min = parseInt(prompt("Enter a min value: "));
-const max = parseInt(prompt("Enter a max value: "));
+// program to check if a number is prime or not
 
-// generating a random number
-const a = Math.floor(Math.random() * (max - min + 1)) + min;
+// take input from the user
+const number = parseInt(prompt("Enter a positive number: "));
+let isPrime = true;
 
-// display a random number
-console.log(`Random value between ${min} and ${max} is ${a}`);
+// check if number is equal to 1
+if (number === 1) {
+    console.log("1 is neither prime nor composite number.");
+}
+
+// check if number is greater than 1
+else if (number > 1) {
+
+    // looping through 2 to number-1
+    for (let i = 2; i < number; i++) {
+        if (number % i == 0) {
+            isPrime = false;
+            break;
+        }
+    }
+
+    if (isPrime) {
+        console.log(`${number} is a prime number`);
+    } else {
+        console.log(`${number} is a not prime number`);
+    }
+}
+
+// check if number is less than 1
+else {
+    console.log("The number is not a prime number.");
+}
 '''
 
 replacer.target = javascript
@@ -17,6 +41,8 @@ replacer.target = javascript
 d = {
     'console.log' : 'print',
     'function' : 'def',
+    'else if' : 'elif',
+    '===': '==',
     #'//' : '#',
     #';' : '',
     'parseInt': 'int',
@@ -43,6 +69,14 @@ def replace_string(target, index, new):
 transpiled = ''''''
 
 for line in javascript.splitlines():
+    if 'true' in line and ('=' in line or '==' in line): line = line.replace('true', 'True')
+    if 'false' in line and ('=' in line or '==' in line): line = line.replace('false', 'False')
+
+    if '}' in line.strip() and 'else' in line.strip():
+        line = line.replace('} else', 'else')
+    if '{' in line.strip() and 'else' in line.strip():
+        line = line.replace('else {', 'else') 
+
     if 'Math' in line:
         transpiled += 'import math\nimport random\n\n'
         line = line.replace('Math', 'math')
@@ -58,10 +92,10 @@ for line in javascript.splitlines():
             line = line.split('\'')[0] + 'f'+ ''.join(line).replace(line.split('\'')[0], '')
         line = line.replace('${', '{')
 
-    if line.lstrip().startswith('//'):
-        line = line.replace('//', '#')
+    if 'else' in line and not line.split('else')[1]:  line = line.replace('else', 'else:')
+    if line.lstrip().startswith('//'): line = line.replace('//', '#')
     
-    if line.endswith('{') and line.replace(' ', '')[-2] == ')':
+    if line.endswith('{') and (line.replace(' ', '')[-2] == ')' or line.replace(' ', '').split('{')[0] == 'else'):
         line = line.replace('{', ':')
 
     if line.lstrip().startswith('}') and line.rstrip().endswith('}'):
@@ -75,4 +109,4 @@ for line in javascript.splitlines():
     transpiled += line 
 
 print(transpiled)
-exec(transpiled)
+#exec(transpiled)
