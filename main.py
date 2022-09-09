@@ -43,8 +43,6 @@ d = {
     'function' : 'def',
     'else if' : 'elif',
     '===': '==',
-    #'//' : '#',
-    #';' : '',
     'parseInt': 'int',
     'const ' : '',
     'let ' : '',
@@ -52,30 +50,18 @@ d = {
     'prompt': 'input'
 }
 
-# Basic Replacing
-replacer.translate('console.log', 'print')
 for i in d:
     replacer.translate(i, d[i])
 
 javascript = replacer.target
-
-def replace_string(target, index, new):
-    temp = []
-    for i in target:
-        temp.append(i)
-    temp[index] = new 
-    return ''.join(temp)
-
-transpiled = ''''''
+transpiled = ''' '''
 
 for line in javascript.splitlines():
     if 'true' in line and ('=' in line or '==' in line): line = line.replace('true', 'True')
     if 'false' in line and ('=' in line or '==' in line): line = line.replace('false', 'False')
 
-    if '}' in line.strip() and 'else' in line.strip():
-        line = line.replace('} else', 'else')
-    if '{' in line.strip() and 'else' in line.strip():
-        line = line.replace('else {', 'else') 
+    if '}' in line.strip() and 'else' in line.strip(): line = line.replace('} else', 'else')
+    if '{' in line.strip() and 'else' in line.strip(): line = line.replace('else {', 'else') 
 
     if 'Math' in line:
         transpiled += 'import math\nimport random\n\n'
@@ -87,7 +73,7 @@ for line in javascript.splitlines():
     
     if '${' in line:
         if line.split('${')[0].split('\'')[0][-1] == 'f':
-            print('Match F-String') 
+            pass
         else:
             line = line.split('\'')[0] + 'f'+ ''.join(line).replace(line.split('\'')[0], '')
         line = line.replace('${', '{')
@@ -97,15 +83,11 @@ for line in javascript.splitlines():
     
     if line.endswith('{') and (line.replace(' ', '')[-2] == ')' or line.replace(' ', '').split('{')[0] == 'else'):
         line = line.replace('{', ':')
-
     if line.lstrip().startswith('}') and line.rstrip().endswith('}'):
         line = line.replace('}', '')
-    
     if line.endswith(';'):
         line = line.replace(';', '')
-    
     line += '\n'
-
     transpiled += line 
 
 print(transpiled)
