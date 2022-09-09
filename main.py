@@ -1,9 +1,9 @@
 import replacer 
 
 javascript = '''
-function hi() {
+function hi(){
     // Print `Hello World`
-    console.log(`Hello, World!`)
+    console.log(`Hello, World!`);
 }
 '''
 
@@ -28,22 +28,34 @@ for i in d:
 
 javascript = replacer.target
 
+def replace_string(target, index, new):
+    temp = []
+    for i in target:
+        temp.append(i)
+    temp[index] = new 
+    return ''.join(temp)
+
+transpiled = ''''''
+
 for line in javascript.splitlines():
-    line = line.rstrip()
+    if '(`' in line: line = line.replace('(`', '(\'')
+    if '`)' in line: line = line.replace('`)', '\')')
 
-    if '`' in line and (line[line.index('`')-1] == '(' or line[line.index('`')-1] == ')'):
-        javascript = javascript.replace(line, line.replace('`', '\''))
     if line.lstrip().startswith('//'):
-        javascript = javascript.replace(line, line.replace('//', '#'))
+        line = line.replace('//', '#')
     
-    if line.endswith('){'):
-        javascript = javascript.replace(line, line.replace('{', ':'))
+    if line.replace(' ', '').endswith('{'):
+        line = line.replace('{', ':')
 
-    if line.endswith(') {'):
-        javascript = javascript.replace(line, line.replace(' {', ':'))
+    if line.lstrip().startswith('}') and line.rstrip().endswith('}'):
+        line = line.replace('}', '')
+    
+    if line.endswith(';'):
+        line = line.replace(';', '')
+    
+    line += '\n'
 
-    if line.endswith('}'):
-        javascript = javascript.replace(line, line.replace('}', ''))
-        
-print(javascript)
+    transpiled += line 
+
+print(transpiled)
 #exec(javascript)
