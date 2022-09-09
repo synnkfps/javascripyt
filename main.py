@@ -5,6 +5,7 @@ function hi(){
     // Print `Hello World`
     console.log(`Hello, World!`);
 }
+hi();
 '''
 
 replacer.target = javascript
@@ -44,7 +45,7 @@ for line in javascript.splitlines():
     if line.lstrip().startswith('//'):
         line = line.replace('//', '#')
     
-    if line.replace(' ', '').endswith('{'):
+    if line.endswith('{') and line.replace(' ', '')[-2] == ')':
         line = line.replace('{', ':')
 
     if line.lstrip().startswith('}') and line.rstrip().endswith('}'):
@@ -58,4 +59,4 @@ for line in javascript.splitlines():
     transpiled += line 
 
 print(transpiled)
-#exec(javascript)
+# exec(transpiled)
