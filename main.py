@@ -1,11 +1,10 @@
 import replacer 
 
 javascript = '''
-function hi(){
-    // Print `Hello World`
-    console.log(`Hello, World!`);
-}
-hi();
+import random
+// generating a random number
+const a = random.random() * (10-1) + 1
+console.log(`Random value between 1 and 10 is ${a}`);
 '''
 
 replacer.target = javascript
@@ -39,8 +38,22 @@ def replace_string(target, index, new):
 transpiled = ''''''
 
 for line in javascript.splitlines():
-    if '(`' in line: line = line.replace('(`', '(\'')
-    if '`)' in line: line = line.replace('`)', '\')')
+    if 'Math' in line:
+        if 'Math.random' in line:
+            pass
+        else:
+            transpiled += 'import math\n'
+            line = line.replace('Math', 'math')
+
+    if '`' in line and ('(' in line or ')' in line):
+        line = line.replace('`', '\'')
+    
+    if '${' in line:
+        if line.split('${')[0].split('\'')[0][-1] == 'f':
+            print('Match F-String') 
+        else:
+            line = line.split('\'')[0] + 'f'+ ''.join(line).replace(line.split('\'')[0], '')
+        line = line.replace('${', '{')
 
     if line.lstrip().startswith('//'):
         line = line.replace('//', '#')
@@ -59,4 +72,4 @@ for line in javascript.splitlines():
     transpiled += line 
 
 print(transpiled)
-# exec(transpiled)
+#exec(transpiled)
