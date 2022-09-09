@@ -1,21 +1,15 @@
 import replacer 
 
 javascript = '''
-// store input numbers
-const num1 = parseInt(prompt('Enter the first number '));
-const num2 = parseInt(prompt('Enter the second number '));
-
-//add two numbers
-const sum = num1 + num2;
-
-// display the sum
-console.log(`The sum of ${num1} and ${num2} is ${sum}`);
+function hi() {
+    // Print `Hello World`
+    console.log(`Hello, World!`)
+}
 '''
 
 replacer.target = javascript
 
 d = {
-    '`' : '\'',
     'console.log' : 'print',
     'function' : 'def',
     #'//' : '#',
@@ -34,6 +28,22 @@ for i in d:
 
 javascript = replacer.target
 
-print(replacer.target)
+for line in javascript.splitlines():
+    line = line.rstrip()
 
+    if '`' in line and (line[line.index('`')-1] == '(' or line[line.index('`')-1] == ')'):
+        javascript = javascript.replace(line, line.replace('`', '\''))
+    if line.lstrip().startswith('//'):
+        javascript = javascript.replace(line, line.replace('//', '#'))
+    
+    if line.endswith('){'):
+        javascript = javascript.replace(line, line.replace('{', ':'))
+
+    if line.endswith(') {'):
+        javascript = javascript.replace(line, line.replace(' {', ':'))
+
+    if line.endswith('}'):
+        javascript = javascript.replace(line, line.replace('}', ''))
+        
+print(javascript)
 #exec(javascript)
